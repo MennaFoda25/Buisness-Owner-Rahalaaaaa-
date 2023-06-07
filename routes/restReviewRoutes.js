@@ -5,7 +5,7 @@ const router = express.Router({ mergeParams: true });
 
 
 router.route('/')
-//.get(hotelReviewController.getAllReviews)
-.post(restReviewController.createRestReview);
+    //.get(hotelReviewController.getAllReviews)
+    .post(restReviewController.createRestReview);
 
 module.exports = router;

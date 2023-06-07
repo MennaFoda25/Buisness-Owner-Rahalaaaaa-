@@ -29,19 +29,7 @@ const userSchema = new mongoose.Schema({
     default: 'user',
     // required:true
   },
-  hotelRequests: [
-    {
-      hotel: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Hotel',
-      },
-      status: {
-        type: String,
-        enum: ['pending', 'approved', 'rejected'],
-        default: 'pending',
-      },
-    },
-  ],
+  
   restaurantRequests: [
     {
       restaurant: {

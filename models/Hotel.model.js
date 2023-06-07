@@ -15,6 +15,21 @@ const hotelSchema = new mongoose.Schema(
     image: {
       type: [String],
     },
+
+    hotelRequests: [
+      {
+        hotel: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Hotel',
+
+        },
+        status: {
+          type: String,
+          enum: ['active', 'in-active'],
+          default: 'active'
+        }
+      }
+    ],
     priceLevel: {
       type: String,
       default: "$$",
@@ -43,13 +58,12 @@ const hotelSchema = new mongoose.Schema(
     address: {
       type: String,
       trim: true,
-      required:true
+      required: true
     },
-    mapLocation:{
-      type:String,
-      required:false
+    mapLocation: {
+      type: String,
+      required: false
     },
-
     location: {
       type: {
         type: String,
@@ -74,16 +88,28 @@ const hotelSchema = new mongoose.Schema(
     },
     reviews: [{
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Review'
+      ref: 'HotelReview'
     }]
   },
   {
-    toJSON: { virtuals: true },
+    //
+    toJSON: {
+      virtuals: true,
+      transform: function (doc, ret) {
+        if (ret.hotelRequests && ret.hotelRequests.length > 0) {
+          ret.status = ret.hotelRequests[0].status; // Access the status field from the first hotel request
+        } else {
+          ret.status = 'In-Active';
+        }
+      },
+    },
     toObject: { virtuals: true },
   }
 );
 
 hotelSchema.index({ location: "2dsphere" });
+// hotelSchema.pre('find');
+
 
 const Hotel = mongoose.model("Hotel", hotelSchema);
 module.exports = Hotel;

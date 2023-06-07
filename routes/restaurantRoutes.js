@@ -1,5 +1,5 @@
 const express = require('express');
-const restaurantController= require('../controlles/restaurantController');
+const restaurantController = require('../controlles/restaurantController');
 const authController = require('./../controlles/authController');
 
 const router = express.Router({ mergeParams: true });
@@ -9,26 +9,16 @@ router
   .route('/')
   .get(restaurantController.getAllRestaurants)
   .post(
-   // authController.protect, // Protect the route, user must be logged in
-   // authController.restrictTo('admin', 'business_owner'), // Restrict access to admin and business_owner roles
+    authController.protect,   // Protect the route, user must be logged in
     restaurantController.createRestaurant);
 
-  router
-  .get('/restaurantsReviews/:id',
+// authController.restrictTo('admin', 'business_owner'), // Restrict access to admin and business_owner roles
+router.get('/restaurantReviews/:id',
   authController.protect,
-  restaurantController.getAllRestaurants)
- 
-// router.route('/:id')
-// .post(
-//   authController.protect,
-//   restaurantController.createReview
-// );
+  restaurantController.getRestReviews);
 
- router
-.get('/restaurantReviews/:id', 
- authController.protect,
-restaurantController.getRestReviews);
-
+router.patch('/acceptRequests/:id',
+  restaurantController.acceptRestaurantReq);
 router
   .route('/:id')
   .get(restaurantController.getRestaurant)

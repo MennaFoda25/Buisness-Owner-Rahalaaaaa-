@@ -8,31 +8,24 @@ const router = express.Router({ mergeParams: true });
 router
   .route('/')
   .get(hotelController.getAllHotels)
-  //.post(hotelController.createHotel);
+  // .post(hotelController.createHotel);
   .post(
-      authController.protect,
-      hotelController.createHotel
-    );  
+    authController.protect,
+    hotelController.createHotel);
 
+router.patch('/acceptRequest/:id',
+  hotelController.acceptHotelReq);
 
-
-    //router.get('/reviews', hotelController.getHotelReviews);
-
-// router.route('/:id')
-// .post(
-//       authController.protect,
-//       hotelController.createReview
-//     );  
 router
   .route('/:id')
   .get(hotelController.getHotel)
   .patch(hotelController.updateHotel)
   .delete(hotelController.deleteHotel);
-  
 
-router.get('/hotelreviews/:id', 
-authController.protect,
- hotelController.getHotelReviews);
+
+router.get('/hotelreviews/:id',
+  authController.protect,
+  hotelController.getHotelReviews);
 
 router
   .route('/hotels-within/distance/:distance/center/:latlng/unit/:unit')

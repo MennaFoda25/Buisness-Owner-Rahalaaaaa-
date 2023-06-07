@@ -69,43 +69,43 @@ exports.createOne = (Model) => {
 };
 
 
-exports.createHotel = (Model) => {
+// exports.createHotel = (Model) => {
   
-  return catchAsync(async (req, res) => {
-    let document;
-    console.log(req.user)
-    if(!req.user || !req.user.role){
-      return res.status(401).json({
-        status: 'error',
-        message: 'You are not authorized to create hotels.'
-      })
-    }
+//   return catchAsync(async (req, res) => {
+//     let document;
+//     console.log(req.user)
+//     if(!req.user || !req.user.role){
+//       return res.status(401).json({
+//         status: 'error',
+//         message: 'You are not authorized to create hotels.'
+//       })
+//     }
 
-    // Check user role
-    if (req.user.role === 'admin') {
-      document = await Model.create(req.body);
-    } else if (req.user.role === 'business_owner') {
-      const hotelRequest = {
-        hotel: req.body.hotelId,
-        status: 'pending'
-      };
+//     // Check user role
+//     if (req.user.role === 'admin') {
+//       document = await Model.create(req.body);
+//     } else if (req.user.role === 'business_owner') {
+//       const hotelRequest = {
+//         hotel: req.body.hotelId,
+//         status: 'pending'
+//       };
 
-      document = await Model.create({
-        ...req.body,
-        hotelRequests: [hotelRequest]
-      });
-    } else {
-      return next(new AppError('User role not supported for creating documents', 400));
-    }
+//       document = await Model.create({
+//         ...req.body,
+//         hotelRequests: [hotelRequest]
+//       });
+//     } else {
+//       return next(new AppError('User role not supported for creating documents', 400));
+//     }
 
-    res.status(201).json({
-      status: 'success',
-      data: {
-        document,
-      },
-    });
-  });
-};
+//     res.status(201).json({
+//       status: 'success',
+//       data: {
+//         document,
+//       },
+//     });
+//   });
+// };
 
 
 

@@ -34,25 +34,25 @@ app.use((req, res, next) => {
 // 3) ROUTES index
 
 app.use('/api/users', userRouter);
-app.use('/api/cities', cityRouter) ; 
+app.use('/api/cities', cityRouter);
 app.use('/api/hotelreviews', hotelReviewRoutes);
-app.use('/api/restaurantReviews',restaurantReviews);
+app.use('/api/restaurantReviews', restaurantReviews);
 
 
 
 // dashaboard specfic endpoints 
-app.use('/api/attractions',attractiosnRouter ) ; 
-app.use('/api/hotels',hotelsRouter ) ; 
-app.use('/api/restaurants',restaurantsRouter ) ; 
+app.use('/api/attractions', attractiosnRouter);
+app.use('/api/hotels', hotelsRouter);
+app.use('/api/restaurants', restaurantsRouter);
 //app.use('/api/')
 
 
 
-app.all('*', (req, res ,next)=>{
-  next(new AppError(`can't find ${req.originalUrl}!` , 404)) ; 
+app.all('*', (req, res, next) => {
+  next(new AppError(`can't find ${req.originalUrl}!`, 404));
 });
 
 app.use(globalErrorHandlers)
 
-module.exports = app ;
+module.exports = app;
 
