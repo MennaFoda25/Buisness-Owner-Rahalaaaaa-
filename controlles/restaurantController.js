@@ -52,7 +52,7 @@ exports.createRestaurant = catchAsync(async (req, res) => {
 
 exports.acceptRestaurantReq = catchAsync(async (req, res) => {
   const restaurantId = req.params.id;
-  const rest = await Restaurant.findOneAndUpdate(
+  const restaurant = await Restaurant.findOneAndUpdate(
     {
       restaurantId,
       'status': 'in-active'
@@ -62,7 +62,7 @@ exports.acceptRestaurantReq = catchAsync(async (req, res) => {
     },
     { new: true }
   );
-  if (!rest) {
+  if (!restaurant) {
     return res.status(404).json({
       status: 'error',
       message: 'Restaurant not found or request is already active',
@@ -73,7 +73,7 @@ exports.acceptRestaurantReq = catchAsync(async (req, res) => {
     status: 'success',
     message: 'Restaurant request has been accepted',
     data: {
-      rest
+      restaurant
     },
   });
 });

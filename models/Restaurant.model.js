@@ -7,19 +7,25 @@ const restaurantSchema = new mongoose.Schema(
       required: [true, "A Restaurant must have a name"],
       trim: true,
     },
+    Description: {
+      type: String
+    },
+    workingDays: {
+      type: String
+    },
+    StartingTime: {
+      type: Number
+    },
+    closeAt: {
+      type: Number
+    },
     image: {
-      type: String,
+      type: [String],
     },
     restRequests:
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Restaurant',
-
-      // status: {
-      //   type: String,
-      //   enum: ['active', 'in-active'],
-      //   default: 'active',
-      // }
     },
 
     status: {  // Add the status field to the schema

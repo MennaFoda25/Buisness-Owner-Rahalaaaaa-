@@ -30,6 +30,11 @@ const hotelSchema = new mongoose.Schema(
         }
       }
     ],
+
+    Description: {
+      type: String
+    },
+
     priceLevel: {
       type: String,
       default: "$$",
