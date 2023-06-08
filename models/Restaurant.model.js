@@ -4,27 +4,29 @@ const restaurantSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, "A Restaraunt must have a name"],
+      required: [true, "A Restaurant must have a name"],
       trim: true,
     },
-    restaurantRequests: [
-      {
-        restaurant: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'Restaurant',
-        },
-        status: {
-          type: String,
-          enum: ['active', 'in-active'],
-          default: 'active'
-        }
-      }
-    ],
     image: {
-      // type: mongoose.SchemaTypes.Url,
       type: String,
     },
+    restRequests:
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Restaurant',
 
+      // status: {
+      //   type: String,
+      //   enum: ['active', 'in-active'],
+      //   default: 'active',
+      // }
+    },
+
+    status: {  // Add the status field to the schema
+      type: String,
+      enum: ['active', 'in-active'],
+      default: 'active',
+    },
     priceLevel: {
       type: String,
       default: "$$",
@@ -32,13 +34,10 @@ const restaurantSchema = new mongoose.Schema(
     address: {
       type: String,
       trim: true,
-      //  required:false
     },
     mapLocation: {
       type: String,
-      //  required:false
     },
-
     rating: {
       type: Number,
       default: 4.5,
@@ -48,11 +47,10 @@ const restaurantSchema = new mongoose.Schema(
     },
     phone: {
       type: String,
-      unique: true
+      unique: true,
     },
-
     cuisine: [{
-      type: String
+      type: String,
     }],
     numberOfReviews: {
       type: Number,
@@ -64,50 +62,35 @@ const restaurantSchema = new mongoose.Schema(
         default: "Point",
         enum: ["Point"],
       },
-
       coordinates: {
         type: [Number],
         required: true,
         validate: {
           validator: function (value) {
             return value.length === 2;
-          }
-        }
+          },
+        },
       },
       address: String,
     },
-
     createdBy: {
       type: mongoose.Schema.ObjectId,
       ref: "User",
     },
     reviews: [{
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'RestReview'
-    }]
-
-
-
+      ref: 'RestReview',
+    }],
   },
   {
     toJSON: {
       virtuals: true,
-      transform: function (doc, ret) {
-        if (ret.restaurantRequests && ret.restaurantRequests.length > 0) {
-          ret.status = ret.restaurantRequests[0].status; // Access the status field from the first hotel request
-        } else {
-          ret.status = 'in-active';
-        }
-      },
     },
     toObject: { virtuals: true },
   }
 );
 
-
 restaurantSchema.index({ location: '2dsphere' });
-
-
 
 const Restaurant = mongoose.model("Restaurant", restaurantSchema);
 module.exports = Restaurant;

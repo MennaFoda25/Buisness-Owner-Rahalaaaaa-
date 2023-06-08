@@ -1,4 +1,5 @@
-const Restaurant = require('../models/Restaurant.model');
+//const Restaurant = require('../models/Restaurant.mode');
+const Restaurant = require('../models/Restaurant.model')
 const factory = require('./handlerFactroy');
 const catchAsync = require('../util/catcAsync');
 //const RestReview = require('../models/restReviews.model');
@@ -51,19 +52,17 @@ exports.createRestaurant = catchAsync(async (req, res) => {
 
 exports.acceptRestaurantReq = catchAsync(async (req, res) => {
   const restaurantId = req.params.id;
-
-  const restaurant = await Restaurant.findOneAndUpdate(
+  const rest = await Restaurant.findOneAndUpdate(
     {
       restaurantId,
-      'restaurantRequests.status': 'in-active'
+      'status': 'in-active'
     },
     {
-      $set: { 'restaurantRequests.$.status': 'active' }
+      $set: { 'status': 'active' }
     },
     { new: true }
   );
-  console.log(restaurant);
-  if (!restaurant) {
+  if (!rest) {
     return res.status(404).json({
       status: 'error',
       message: 'Restaurant not found or request is already active',
@@ -74,7 +73,7 @@ exports.acceptRestaurantReq = catchAsync(async (req, res) => {
     status: 'success',
     message: 'Restaurant request has been accepted',
     data: {
-      restaurant,
+      rest
     },
   });
 });
