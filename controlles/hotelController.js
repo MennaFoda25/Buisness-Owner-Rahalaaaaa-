@@ -1,10 +1,8 @@
 const Hotel = require('../models/Hotel.model');
 const catchAsync = require('../util/catcAsync');
 const factory = require('./handlerFactroy');
-//const HotelReview = require('../models/hotelReviews.model');
-//const restrictTo  = require('../controlles/authController');
 exports.getHotel = factory.getOne(Hotel);
-exports.getAllHotels = factory.getAll(Hotel);
+//exports.getAllHotels = factory.getAll(Hotel);
 exports.updateHotel = factory.updateOne(Hotel);
 exports.deleteHotel = factory.deleteOne(Hotel);
 
@@ -32,10 +30,7 @@ exports.createHotel = catchAsync(async (req, res) => {
     });
 
     await document.save();
-    // Hotel.hotelRequest.push({
-    //   hotel: document._id,
-    //   status: hotelRequest.status
-    // })
+   
     res.status(201).json({
       status: 'success',
       data: {
@@ -48,15 +43,20 @@ exports.createHotel = catchAsync(async (req, res) => {
 
 
 exports.acceptHotelReq = catchAsync(async (req, res) => {
-
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({
+      status: 'error',
+      message: 'You are not authorized to perform this action',
+    });
+  }
   const hotelId = req.params.id;
   const hotel = await Hotel.findOneAndUpdate(
     {
       hotelId,
-      'hotelRequests.status': 'In-Active'
+      'status': 'in-active'
     },
     {
-      $set: { 'hotelRequests.$.status': 'Active' }
+      $set: { 'status': 'active' }
     },
     { new: true }
   );
@@ -76,37 +76,6 @@ exports.acceptHotelReq = catchAsync(async (req, res) => {
     },
   });
 });
-
-
-//find hotel request by matching ID
-//  const hotelRequest = hotel.hotelRequests.find((request) => request._id.toString() === hotelId
-//&& request.status === 'In-Active'
-// );
-
-// console.log(hotelRequest);
-
-// if (!hotelRequest || hotelRequest.status !== 'In-Active' ) {
-//   return res.status(400).json({
-//     status: 'error',
-//     message: 'Already approved / rejected request '
-//   });
-// }
-
-// Set the status of the hotel request to 'Active'
-// hotelRequest.status = 'Active';
-
-// await hotel.save();
-
-// hotel.hotelRequests.forEach((request) => {
-//   if (request._id.toString() === hotelId && request.status === 'In-Active') {
-//     request.status = 'Active';
-//   }
-// });
-//   res.status(200).json({
-//     status: 'success',
-//     message: 'Hotel request is accepted'
-//   });
-// });
 
 // /hotels-within/distance/:distance/center/:latlng/unit/:unit
 exports.hotelsWithin = catchAsync(async (req, res, next) => {
@@ -160,32 +129,35 @@ exports.getHotelReviews = async (req, res) => {
   }
 };
 
-// exports.showHotelInsights = async(req,res)=>{
-//   try{
-//     const hotelId = req.params.id;
-//     //get the wanted hotel
-//   const hotel = await Hotel.findById(hotelId);
+exports.getAllHotels = catchAsync(async (req, res) => {
+  // Check if the user role is admin or user
+  if (!req.user || (req.user.role !== 'admin' && req.user.role !== 'user')) {
+    return res.status(401).json({
+      status: 'error',
+      message: 'You are not authorized to access this resource.'
+    });
+  }
 
-//    if(!hotel){
-//     return res.status(404).json({
-//       status:'error',
-//       message:'Hotel not found'
-//     });
-//     }
+  const hotels = await Hotel.find({ 'status': 'active' });
 
-//     //Calculate insights ba2a
-//     res.status(200).json({
-//       status:'success',
-//       data:{
-//         insights
-//       },
-//     });
-//   }
-//   catch(error){
-//     res.status(500).json({
-//       status:'error',
-//       message:'Failed to get hotel insights'
-//     })
-//   }
-// };
+  res.status(200).json({
+    status: 'success',
+    results: hotels.length,
+    data: {
+      hotels
+    }
+  });
+});
+
+exports.getInactiveHotels = catchAsync(async (req, res) => {
+  const hotels = await Hotel.find({'status': 'in-active'});
+
+  res.status(200).json({
+    status: 'success',
+    results: hotels.length,
+    data: {
+      hotels
+    }
+  });
+});
 

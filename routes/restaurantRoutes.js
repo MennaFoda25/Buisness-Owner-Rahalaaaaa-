@@ -4,10 +4,12 @@ const authController = require('./../controlles/authController');
 
 const router = express.Router({ mergeParams: true });
 
-
+router.get('/inactiveRest',
+  restaurantController.getInactiveRestaurants);
 router
   .route('/')
-  .get(restaurantController.getAllRestaurants)
+  .get(authController.protect,
+    restaurantController.getAllRestaurants)
   .post(
     authController.protect,   // Protect the route, user must be logged in
     restaurantController.createRestaurant);
@@ -18,6 +20,7 @@ router.get('/restaurantReviews/:id',
   restaurantController.getRestReviews);
 
 router.patch('/acceptRequests/:id',
+  authController.protect,
   restaurantController.acceptRestaurantReq);
 router
   .route('/:id')

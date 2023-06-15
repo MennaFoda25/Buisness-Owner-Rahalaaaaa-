@@ -14,10 +14,10 @@ const restaurantSchema = new mongoose.Schema(
       type: String
     },
     StartingTime: {
-      type: Number
+      type: String
     },
     closeAt: {
-      type: Number
+      type: String
     },
     image: {
       type: [String],
@@ -28,11 +28,12 @@ const restaurantSchema = new mongoose.Schema(
       ref: 'Restaurant',
     },
 
-    status: {  // Add the status field to the schema
+    status: {
       type: String,
       enum: ['active', 'in-active'],
-      default: 'active',
+      default: 'active'
     },
+    
     priceLevel: {
       type: String,
       default: "$$",

@@ -2,13 +2,13 @@ const mongoose = require("mongoose");
 
 const attractionSchema = new mongoose.Schema(
   {
-      name: {
+    name: {
       type: String,
-      required: [true, "A Hotel must have a name"],
+      required: [true, "A place must have a name"],
       trim: true,
     },
     image: {
-      type: String,
+      type: [String],
     },
     rating: {
       type: Number,
@@ -17,30 +17,41 @@ const attractionSchema = new mongoose.Schema(
       max: [5, "Rating must be below 5.0"],
       set: (val) => Math.round(val * 10) / 10,
     },
-    
+
     numberOfReviews: {
       type: Number,
       default: 0,
     },
-    
-    description : {
+
+    Description: {
       type: String
-    } ,
+    },
     location: {
       type: {
         type: String,
         default: "Point",
         enum: ["Point"],
       },
-      
-      coordinates: [Number],
-      address: String,
-      // description: String,
+      coordinates: {
+        type: [Number], // Array of numbers
+        required: true,
+        validate: {
+          validator: function (value) {
+            return value.length === 2; // Require exactly two elements
+          },
+          message:
+            "Coordinates must contain exactly two elements (longitude and latitude).",
+        },
+      },
     },
-      
-    activityDesctiptor :[{
-      type  : String 
-    }]   
+    reviews: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'AttractionReview'
+    }],
+
+    activityDesctiptor: [{
+      type: String
+    }]
   },
   {
     toJSON: { virtuals: true },
@@ -50,7 +61,7 @@ const attractionSchema = new mongoose.Schema(
 
 
 
-attractionSchema.index({location : '2dsphere'  });
+attractionSchema.index({ location: '2dsphere' });
 
 
 

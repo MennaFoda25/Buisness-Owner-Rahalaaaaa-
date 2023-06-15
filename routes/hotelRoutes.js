@@ -7,16 +7,24 @@ const router = express.Router({ mergeParams: true });
 
 router
   .route('/')
-  .get(hotelController.getAllHotels)
+  .get(authController.protect,
+    hotelController.getAllHotels)
   // .post(hotelController.createHotel);
   .post(
     authController.protect,
     hotelController.createHotel);
 
 router.patch('/acceptRequest/:id',
+  //authController.protect,
   hotelController.acceptHotelReq);
 
-router
+
+  router.get('/InActiveHotels',
+ // authController.protect,
+  hotelController.getInactiveHotels);
+
+
+  router
   .route('/:id')
   .get(hotelController.getHotel)
   .patch(hotelController.updateHotel)

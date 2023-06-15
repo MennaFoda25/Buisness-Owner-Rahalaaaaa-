@@ -5,7 +5,7 @@ const catchAsync = require('../util/catcAsync');
 //const RestReview = require('../models/restReviews.model');
 
 exports.getRestaurant = factory.getOne(Restaurant);
-exports.getAllRestaurants = factory.getAll(Restaurant);
+
 exports.updateRestaurant = factory.updateOne(Restaurant);
 exports.deleteRestaurant = factory.deleteOne(Restaurant);
 exports.createRestaurant = catchAsync(async (req, res) => {
@@ -32,13 +32,6 @@ exports.createRestaurant = catchAsync(async (req, res) => {
       status: 'in-active'
     });
     await document.save();
-    //   restaurant = await Restaurant.create({
-    //     ...req.body,
-    //     restaurantRequests: [restaurantRequest]
-    //   });
-    // } else {
-    //   return next(new AppError('User role not supported for creating documents', 400));
-    // }
 
     res.status(201).json({
       status: 'success',
@@ -78,13 +71,24 @@ exports.acceptRestaurantReq = catchAsync(async (req, res) => {
   });
 });
 
+exports.getInactiveRestaurants = catchAsync(async (req, res) => {
+  const inactiveRestaurants = await Restaurant.find({ status: 'in-active' }).lean();
+
+  res.status(200).json({
+    status: 'success',
+    results: inactiveRestaurants.length,
+    data: {
+      restaurants: inactiveRestaurants
+    }
+  });
+});
 
 
 exports.getRestReviews = async (req, res) => {
   try {
     const restaurantId = req.params.id;
     const restaurant = await Restaurant.findById(restaurantId).populate("reviews");
-    console.log(restaurant)
+    // console.log(restaurant)
 
 
     if (!restaurant) {
@@ -108,42 +112,6 @@ exports.getRestReviews = async (req, res) => {
 
 };
 
-
-
-// exports.acceptRestReq = catchAsync(async (req, res) => {
-
-//   const restaurantId = req.params.id;
-//   const restaurant = await Restaurant.findByIdAndUpdate(
-//     {
-//       _id: restaurantId,
-//       'restaurantRequests.status': 'In-Active'
-//     },
-//     {
-//       $set: { 'restaurantRequests.$.status': 'Active' }
-//     },
-//     { new: true }
-//   );
-//   console.log(restaurant);
-//   if (!restaurant) {
-//     return res.status(404).json({
-//       status: 'error',
-//       message: 'restaurant not found',
-//     });
-//   }
-
-//   res.status(200).json({
-//     status: 'success',
-//     message: 'restaurant request is accepted',
-//     data: {
-//       restaurant,
-//     },
-//   });
-// });
-
-//exports.createRestaurant = factory.createRes(Restaurant);
-//exports.createRestaurant = factory.createRestaurant(Restaurant);
-//exports.createRestaurant = factory.createOne(Restaurant);
-
 // /restaurants-within/distance/:distance/center/:latlng/unit/:unit
 exports.restaurantsWithin = catchAsync(async (req, res, next) => {
   const { distance, latlng, unit } = req.params;
@@ -165,4 +133,23 @@ exports.restaurantsWithin = catchAsync(async (req, res, next) => {
     }
   });
 });
+
+exports.getAllRestaurants = catchAsync(async (req, res) => {
+  const restaurants = await Restaurant.find({ 'status': 'active' });
+  if (!req.user || (req.user.role !== 'admin' && req.user.role !== 'user')) {
+    return res.status(401).json({
+      status: 'error',
+      message: 'You are not authorized to access this resource.'
+    });
+  }
+  res.status(200).json({
+    status: 'success',
+    results: restaurants.length,
+    data: {
+      restaurants
+    }
+  });
+});
+
+
 

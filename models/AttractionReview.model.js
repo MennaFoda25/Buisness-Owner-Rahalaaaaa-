@@ -1,22 +1,16 @@
-const mongoose = require('mongoose');
-
-const hotelReviewSchema = new mongoose.Schema(
+const mongoose = require('mongoose')
+const AttractionReviewSchema = new mongoose.Schema(
     {
         comment: {
-            type: String,
-        },
-        rating: {
-            type: Number,
-            min: 1,
-            max: 5
+            type: String
         },
         createdAt: {
             type: Date,
             default: Date.now
         },
-        hotel: {
+        place: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Hotel',
+            ref: 'Attraction',
             required: true
         },
         userId: {
@@ -24,12 +18,12 @@ const hotelReviewSchema = new mongoose.Schema(
             ref: 'User',
             required: true
         }
+
     },
     {
         toJSON: { virtuals: true },
         toObject: { virtuals: true }
     }
 );
-const HotelReview = mongoose.model('HotelReview', hotelReviewSchema);
-
-module.exports = HotelReview;
+const AttractionReview = mongoose.model('AttractionReview', AttractionReviewSchema);
+module.exports = AttractionReview;

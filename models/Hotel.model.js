@@ -8,28 +8,20 @@ const hotelSchema = new mongoose.Schema(
       required: [true, "A Hotel must have a name"],
       trim: true,
     },
-    // hotelId:{
-    //   type:String,
-    //   required:[true,"A Hotel must have a hotelId"]
-    // },
     image: {
       type: [String],
     },
 
-    hotelRequests: [
-      {
-        hotel: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'Hotel',
+    hotelRequests: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Hotel',
+    },
 
-        },
-        status: {
-          type: String,
-          enum: ['active', 'in-active'],
-          default: 'active'
-        }
-      }
-    ],
+    status: {
+      type: String,
+      enum: ['active', 'in-active'],
+      default: 'active'
+    },
 
     Description: {
       type: String
@@ -97,16 +89,8 @@ const hotelSchema = new mongoose.Schema(
     }]
   },
   {
-    //
     toJSON: {
       virtuals: true,
-      transform: function (doc, ret) {
-        if (ret.hotelRequests && ret.hotelRequests.length > 0) {
-          ret.status = ret.hotelRequests[0].status; // Access the status field from the first hotel request
-        } else {
-          ret.status = 'In-Active';
-        }
-      },
     },
     toObject: { virtuals: true },
   }

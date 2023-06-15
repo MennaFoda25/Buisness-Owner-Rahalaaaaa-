@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'please tell us your name']
   },
-  phone:{
+  phone: {
     type: String,
     //required:[true,'please enter a valid number']
   },
@@ -29,20 +29,6 @@ const userSchema = new mongoose.Schema({
     default: 'user',
     // required:true
   },
-  
-  restaurantRequests: [
-    {
-      restaurant: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Restaurant',
-      },
-      status: {
-        type: String,
-        enum: ['pending', 'approved', 'rejected'],
-        default: 'pending',
-      },
-    },
-  ],
   password: {
     type: String,
     required: [true, 'please provide a password'],
@@ -53,7 +39,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please confrim your password'],
     validate: {
-      validator: function(password) {
+      validator: function (password) {
         return this.password === password;
       },
       message: "The passwords doesn't match "
@@ -61,22 +47,22 @@ const userSchema = new mongoose.Schema({
   },
   passwordChangedAt: Date,
   passwordRestToken: String,
-  passwordResetExpiresIn: Date , 
-  active:{
-    type : Boolean , 
-    default : true ,
-    select : false 
+  passwordResetExpiresIn: Date,
+  active: {
+    type: Boolean,
+    default: true,
+    select: false
   }
 },
-{
-  toJSON : {virtuals : true} , 
-  toObject : {virtuals : true} , 
+  {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
 
-});
+  });
 
 
 //HASH
-userSchema.pre('save', async function(next) {
+userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
 
   this.password = await bcrypt.hash(this.password, 12);
@@ -90,18 +76,18 @@ userSchema.pre('save', async function(next) {
 
 
 
-userSchema.pre('save', async function(next) {
+userSchema.pre('save', async function (next) {
   if (!this.isModified('password') || this.isNew) return next();
 
-  this.passwordChangedAt = Date.now() - 1000 ;
+  this.passwordChangedAt = Date.now() - 1000;
 
   next();
 });
 
-userSchema.pre(/^find/,  async function(next){
-  this.find({active : {$ne : false}}) ;
+userSchema.pre(/^find/, async function (next) {
+  this.find({ active: { $ne: false } });
 
-  next(); 
+  next();
 })
 
 userSchema.methods.comparePassowrd = async (
@@ -111,7 +97,7 @@ userSchema.methods.comparePassowrd = async (
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 
-userSchema.methods.changedPasswordAfter = function(JWTTimeStamp) {
+userSchema.methods.changedPasswordAfter = function (JWTTimeStamp) {
   if (this.passwordChangedAt) {
     const changedTimeStamp = parseInt(
       this.passwordChangedAt.getTime() / 1000,
@@ -124,7 +110,7 @@ userSchema.methods.changedPasswordAfter = function(JWTTimeStamp) {
   return false;
 };
 
-userSchema.methods.createPasswordResetToken = function() {
+userSchema.methods.createPasswordResetToken = function () {
   const restToken = crypto.randomBytes(32).toString('hex');
 
   this.passwordRestToken = crypto
@@ -132,7 +118,7 @@ userSchema.methods.createPasswordResetToken = function() {
     .update(restToken)
     .digest('hex');
 
-  this.passwordResetExpiresIn = Date.now() + 10 * 60 * 1000 ;
+  this.passwordResetExpiresIn = Date.now() + 10 * 60 * 1000;
 
 
   return restToken;
