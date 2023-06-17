@@ -29,7 +29,8 @@ exports.createRestaurant = catchAsync(async (req, res) => {
 
     document = await Restaurant.create({
       ...req.body,
-      status: 'in-active'
+      status: 'in-active',
+      createdBy: req.user._id
     });
     await document.save();
 
@@ -135,13 +136,21 @@ exports.restaurantsWithin = catchAsync(async (req, res, next) => {
 });
 
 exports.getAllRestaurants = catchAsync(async (req, res) => {
-  const restaurants = await Restaurant.find({ 'status': 'active' });
-  if (!req.user || (req.user.role !== 'admin' && req.user.role !== 'user')) {
-    return res.status(401).json({
-      status: 'error',
-      message: 'You are not authorized to access this resource.'
-    });
+  // const restaurants = await Restaurant.find({ 'status': 'active' });
+  let restaurants;
+
+  if (req.user.role === 'user') {
+    restaurants = await Restaurant.find({ 'status': 'active' });
+  } else if (req.user.role === 'business_owner') {
+    restaurants = await Restaurant.find({ 'createdBy': req.user._id });
   }
+
+  // if (!req.user || (req.user.role !== 'admin' && req.user.role !== 'user')) {
+  //   return res.status(401).json({
+  //     status: 'error',
+  //     message: 'You are not authorized to access this resource.'
+  //   });
+  // }
   res.status(200).json({
     status: 'success',
     results: restaurants.length,

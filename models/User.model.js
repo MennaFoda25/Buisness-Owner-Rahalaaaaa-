@@ -29,6 +29,10 @@ const userSchema = new mongoose.Schema({
     default: 'user',
     // required:true
   },
+  createdPlaces:{
+    
+  },
+
   password: {
     type: String,
     required: [true, 'please provide a password'],
