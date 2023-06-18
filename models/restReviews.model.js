@@ -1,33 +1,36 @@
-const mongoose =require('mongoose')
+const mongoose = require('mongoose')
 const restReviewSchema = new mongoose.Schema(
     {
-        comment:{
-            type:String,
+        comment: {
+            type: String,
         },
-        rating:{
-            type:Number,
-            min:1,
-            max:5
+        rating: {
+            type: Number,
+            min: 1,
+            max: 5
         },
-        createdAt:{
+        createdAt: {
             type: Date,
-            default:Date.now
+            default: Date.now
+        },
+        name: {
+            type: String
         },
         restaurant: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Restaurant',
             required: true
-          },
-        userId:{
-            type:mongoose.Schema.Types.ObjectId,
-            ref:'User',
+        },
+        userId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
             required: true
+        }
+    },
+    {
+        toJSON: { virtuals: true },
+        toObject: { virtuals: true }
     }
-},
-{
-    toJSON:{virtuals:true},
-    toObject:{virtuals:true}
-}
 );
-const RestReview = mongoose.model('RestReview',restReviewSchema);
+const RestReview = mongoose.model('RestReview', restReviewSchema);
 module.exports = RestReview;

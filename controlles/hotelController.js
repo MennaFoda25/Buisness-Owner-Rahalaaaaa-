@@ -26,11 +26,12 @@ exports.createHotel = catchAsync(async (req, res) => {
 
     document = await Hotel.create({
       ...req.body,
-      status: 'in-active'
+      status: 'in-active',
+      createdBy: req.user._id
     });
 
     await document.save();
-   
+
     res.status(201).json({
       status: 'success',
       data: {
@@ -130,15 +131,14 @@ exports.getHotelReviews = async (req, res) => {
 };
 
 exports.getAllHotels = catchAsync(async (req, res) => {
+  let hotels;
   // Check if the user role is admin or user
-  if (!req.user || (req.user.role !== 'admin' && req.user.role !== 'user')) {
-    return res.status(401).json({
-      status: 'error',
-      message: 'You are not authorized to access this resource.'
-    });
+  if (req.user.role === 'user') {
+    hotels = await hotels.find({ 'status': 'active' });
+  } else if (req.user.role === 'business_owner') {
+    hotels = await Hotel.find({ 'createdBy': req.user._id });
   }
-
-  const hotels = await Hotel.find({ 'status': 'active' });
+  //const hotels = await Hotel.find({ 'status': 'active' });
 
   res.status(200).json({
     status: 'success',
@@ -150,7 +150,7 @@ exports.getAllHotels = catchAsync(async (req, res) => {
 });
 
 exports.getInactiveHotels = catchAsync(async (req, res) => {
-  const hotels = await Hotel.find({'status': 'in-active'});
+  const hotels = await Hotel.find({ 'status': 'in-active' });
 
   res.status(200).json({
     status: 'success',

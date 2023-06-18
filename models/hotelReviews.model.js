@@ -14,6 +14,10 @@ const hotelReviewSchema = new mongoose.Schema(
             type: Date,
             default: Date.now
         },
+        name:{
+            type:String
+        },
+
         hotel: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Hotel',
