@@ -88,10 +88,14 @@ exports.getInactiveRestaurants = catchAsync(async (req, res) => {
 exports.getRestReviews = async (req, res) => {
   try {
     const restaurantId = req.params.id;
-    const restaurant = await Restaurant.findById(restaurantId).populate("reviews");
-    // console.log(restaurant)
-
-
+    const restaurant = await Restaurant.findById(restaurantId).populate({
+      path: 'reviews',
+      populate: {
+        path: 'userId',
+        select: 'name',
+      },
+    });
+   
     if (!restaurant) {
       return res.status(404).json({
         status: 'error',
@@ -101,7 +105,7 @@ exports.getRestReviews = async (req, res) => {
     res.status(200).json({
       status: 'success',
       data: {
-        reviews: restaurant.reviews,
+        restaurant
       },
     });
   } catch (error) {

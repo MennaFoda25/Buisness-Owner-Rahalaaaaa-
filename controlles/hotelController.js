@@ -44,12 +44,12 @@ exports.createHotel = catchAsync(async (req, res) => {
 
 
 exports.acceptHotelReq = catchAsync(async (req, res) => {
-  if (req.user.role !== 'admin') {
-    return res.status(403).json({
-      status: 'error',
-      message: 'You are not authorized to perform this action',
-    });
-  }
+  // if (req.user.role !== 'admin') {
+  //   return res.status(403).json({
+  //     status: 'error',
+  //     message: 'You are not authorized to perform this action',
+  //   });
+  // }
   const hotelId = req.params.id;
   const hotel = await Hotel.findOneAndUpdate(
     {
@@ -105,9 +105,13 @@ exports.hotelsWithin = catchAsync(async (req, res, next) => {
 exports.getHotelReviews = async (req, res) => {
   try {
     const hotelId = req.params.id;
-    // Retrieve the hotel and populate the reviews
-    const hotel = await Hotel.findById(hotelId).populate("reviews");
-    //console.log(hotel)
+    const hotel = await Hotel.findById(hotelId).populate({
+      path: 'reviews',
+      populate: {
+        path: 'userId',
+        select: 'name',
+      },
+    });
 
     if (!hotel) {
       return res.status(404).json({
@@ -115,7 +119,6 @@ exports.getHotelReviews = async (req, res) => {
         message: 'Hotel not found',
       });
     }
-
     res.status(200).json({
       status: 'success',
       data: {

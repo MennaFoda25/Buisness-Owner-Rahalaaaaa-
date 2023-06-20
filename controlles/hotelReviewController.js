@@ -21,6 +21,8 @@ exports.createhotelReview = catcAsync(async (req, res) => {
     });
   }
 
+  await review.populate('userId', 'name');
+
   // Add the newly created review ID to the hotel's reviews array
   const hotel = await Hotel.findByIdAndUpdate(
     hotelId,
@@ -35,7 +37,13 @@ exports.createhotelReview = catcAsync(async (req, res) => {
     });
   }
 
-  res.status(201).json({ status: 'success', data: { review, hotel } });
+  res.status(201).json({
+    status: 'success', data: {
+      review: {
+        name: review.userId.name
+      }, hotel
+    }
+  });
 });
 
 

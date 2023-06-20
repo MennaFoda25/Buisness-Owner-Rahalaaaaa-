@@ -56,6 +56,8 @@ exports.createRestReview = catcAsync(async (req, res) => {
       message: 'Failed to create the review',
     });
   }
+  await review.populate('userId', 'name');
+
   // Add the newly created review to the restaurant's reviews array
   const restaurant = await Restaurant.findByIdAndUpdate(
     restaurantId,
@@ -70,5 +72,12 @@ exports.createRestReview = catcAsync(async (req, res) => {
     });
   }
 
-  res.status(201).json({ status: 'success', data: { review, restaurant } });
+  res.status(201).json({
+    status: 'success', data: {
+      review: {
+      
+        name: review.userId.name,
+      }, restaurant
+    }
+  });
 });
